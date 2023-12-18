@@ -1,0 +1,3 @@
+singularity exec --nv --overlay /scratch/yw6594/tutorial/mm.ext3:ro --overlay /vast/work/public/ml-datasets/imagenet/imagenet-train.sqf --overlay /vast/work/public/ml-datasets/imagenet/imagenet-test.sqf --overlay /vast/work/public/ml-datasets/imagenet/imagenet-val.sqf /scratch/work/public/singularity/cuda11.6.124-cudnn8.4.0.27-devel-ubuntu20.04.4.sif /bin/bash
+# source /ext3/env.sh
+# singularity exec --nv --overlay /scratch/yw6594/tutorial/mm.ext3:ro --overlay /vast/work/public/ml-datasets/imagenet/imagenet-train.sqf  --overlay /vast/work/public/ml-datasets/imagenet/imagenet-test.sqf --overlay /vast/work/public/ml-datasets/imagenet/imagenet-val.sqf /scratch/work/public/singularity/cuda11.6.124-cudnn8.4.0.27-devel-ubuntu20.04.4.sif

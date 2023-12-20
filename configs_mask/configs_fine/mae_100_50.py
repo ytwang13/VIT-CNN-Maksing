@@ -5,7 +5,7 @@ model = dict(
         type='HiViT',
         arch='base',
         img_size=224,
-        init_cfg=dict(type='Pretrained', checkpoint='/scratch/yw6594/hpml/mmpretrain/out/out/maskout/epoch_5.pth', prefix='backbone.')),
+        init_cfg=dict(type='Pretrained', checkpoint='/scratch/yw6594/hpml/mmpretrain/out/out/mask100/epoch_40.pth', prefix='backbone.')),
     neck=dict(type='GlobalAveragePooling'),
     head=dict(
         type='LinearClsHead',
@@ -112,7 +112,7 @@ test_evaluator = val_evaluator
 optim_wrapper = dict(
     optimizer=dict(
         type='AdamW',
-        lr=5e-4 * 1024 / 512,
+        lr=3e-4 * 1024 / 512,
         weight_decay=0.05,
         eps=1e-8,
         betas=(0.9, 0.999)),
@@ -129,16 +129,16 @@ optim_wrapper = dict(
 # learning policy
 param_scheduler = [
     # warm up learning rate scheduler
-    dict(
-        type='LinearLR',
-        start_factor=1/3,
-        by_epoch=False,
-        end=200,
-        # update by iter
-        # convert_to_iter_based=True
-        ),
+    # dict(
+    #     type='LinearLR',
+    #     start_factor=1/3,
+    #     by_epoch=False,
+    #     end=200,
+    #     # update by iter
+    #     # convert_to_iter_based=True
+    #     ),
     # main learning rate scheduler
-    # dict(type='CosineAnnealingLR', eta_min=1e-5, by_epoch=True, begin=0)
+    dict(type='CosineAnnealingLR', eta_min=1e-4, by_epoch=True, begin=0, convert_to_iter_based=True)
 ]
 
 # train, val, test setting

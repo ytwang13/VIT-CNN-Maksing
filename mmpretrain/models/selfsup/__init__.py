@@ -19,6 +19,7 @@ from .simmim import SimMIM, SimMIMSwinTransformer
 from .simsiam import SimSiam
 from .spark import SparK
 from .swav import SwAV
+from .maeself import MAEViTself, MAEHiViTself, MAEself
 
 __all__ = [
     'BaseSelfSupervisor',
@@ -56,4 +57,7 @@ __all__ = [
     'SparK',
     'MFF',
     'MFFViT',
+    'MAEViTself', 
+    'MAEHiViTself',
+    'MAEself',
 ]

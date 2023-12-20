@@ -1,15 +1,14 @@
 # model settings
 model = dict(
-    type='MAE',
-    backbone=dict(
-        type='MAEHiViT', patch_size=16, arch='base', mask_ratio=0.75),
+    type='MAEself',
+    backbone=dict(type='MAEViTself', arch='b', patch_size=16, mask_ratio=0.5, mask_type='block'),
     neck=dict(
         type='MAEPretrainDecoder',
         patch_size=16,
         in_chans=3,
-        embed_dim=512,
+        embed_dim=768,
         decoder_embed_dim=512,
-        decoder_depth=6,
+        decoder_depth=8,
         decoder_num_heads=16,
         mlp_ratio=4.,
     ),
@@ -26,8 +25,8 @@ model = dict(
 # dataset settings
 dataset_type = 'ImageNet'
 # data_root = 'data/imagenet1k/'
-# data_root = 'data/imagenet100/'
-data_root = '/imagenet/'
+data_root = 'data/imagenet100/'
+# data_root = '/imagenet/'
 data_preprocessor = dict(
     type='SelfSupDataPreprocessor',
     mean=[123.675, 116.28, 103.53],
@@ -81,17 +80,17 @@ optim_wrapper = dict(
 param_scheduler = [
     dict(
         type='LinearLR',
-        start_factor=1e-4,
+        start_factor=1e-2,
         by_epoch=True,
         begin=0,
-        end=40,
+        end=4,
         convert_to_iter_based=True),
     dict(
         type='CosineAnnealingLR',
-        T_max=360,
+        T_max=96,
         by_epoch=True,
-        begin=40,
-        end=400,
+        begin=4,
+        end=100,
         convert_to_iter_based=True)
 ]
 
@@ -149,7 +148,7 @@ env_cfg = dict(
 )
 
 # set visualizer
-vis_backends = [dict(type='LocalVisBackend')]
+vis_backends = [dict(type='LocalVisBackend'), dict(type='TensorboardVisBackend')]
 visualizer = dict(type='UniversalVisualizer', vis_backends=vis_backends)
 
 # set log level
@@ -165,4 +164,4 @@ resume = True
 randomness = dict(seed=None, deterministic=False)
 
 
-work_dir = '/scratch/yw6594/out/mask/ratio5'
+work_dir = '/scratch/yw6594/out/mask100/vitblock'

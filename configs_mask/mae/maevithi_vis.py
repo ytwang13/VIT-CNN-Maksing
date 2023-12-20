@@ -1,8 +1,8 @@
 # model settings
 model = dict(
-    type='MAE',
+    type='MAEself',
     backbone=dict(
-        type='MAEHiViT', patch_size=16, arch='base', mask_ratio=0.75),
+        type='MAEHiViTself', patch_size=16, arch='base', mask_ratio=0.5),
     neck=dict(
         type='MAEPretrainDecoder',
         patch_size=16,
@@ -26,7 +26,6 @@ model = dict(
 # dataset settings
 dataset_type = 'ImageNet'
 # data_root = 'data/imagenet1k/'
-# data_root = 'data/imagenet100/'
 data_root = '/imagenet/'
 data_preprocessor = dict(
     type='SelfSupDataPreprocessor',
@@ -47,8 +46,8 @@ train_pipeline = [
 ]
 
 train_dataloader = dict(
-    batch_size=256,
-    num_workers=8,
+    batch_size=512,
+    num_workers=10,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
     collate_fn=dict(type='default_collate'),
@@ -104,7 +103,6 @@ default_hooks = dict(
 randomness = dict(seed=0, diff_rank_seed=True)
 
 # auto resume
-resume = True
 find_unused_parameters = False
 
 # NOTE: `auto_scale_lr` is for automatically scaling LR
@@ -127,19 +125,22 @@ default_hooks = dict(
     param_scheduler=dict(type='ParamSchedulerHook'),
 
     # save checkpoint per epoch.
-    checkpoint=dict(type='CheckpointHook', interval=1, max_keep_ckpts=10),
+    checkpoint=dict(type='CheckpointHook', interval=1),
 
     # set sampler seed in distributed evrionment.
     sampler_seed=dict(type='DistSamplerSeedHook'),
 
     # validation results visualization, set True to enable it.
     visualization=dict(type='VisualizationHook', enable=False),
+    # profiler_config = dict(type='ProfilerHook',profile_times=1, by_epoch=True, record_shapes=True,\
+    #                         profile_memory=True, \
+    #     on_trace_ready=dict(type='tb_trace')),#activity_with_cuda = True,
 )
 
 # configure environment
 env_cfg = dict(
     # whether to enable cudnn benchmark
-    cudnn_benchmark=False,
+    cudnn_benchmark=True,
 
     # set multi process parameters
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0),
@@ -150,19 +151,20 @@ env_cfg = dict(
 
 # set visualizer
 vis_backends = [dict(type='LocalVisBackend')]
+# vis_backends = [dict(type='LocalVisBackend'), dict(type='TensorboardVisBackend')]
 visualizer = dict(type='UniversalVisualizer', vis_backends=vis_backends)
 
 # set log level
 log_level = 'INFO'
 
 # load from which checkpoint
-# load_from = '/scratch/yw6594/out/maskout/epoch_53.pth'
+load_from = None
 
 # whether to resume training from the loaded checkpoint
-resume = True
+resume = False
 
 # Defaults to use random seed and disable `deterministic`
 randomness = dict(seed=None, deterministic=False)
 
 
-work_dir = '/scratch/yw6594/out/mask/ratio5'
+work_dir = '/scratch/yw6594/out/maskoutvis/vit'

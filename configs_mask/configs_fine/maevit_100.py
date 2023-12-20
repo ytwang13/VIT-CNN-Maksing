@@ -2,28 +2,21 @@
 model = dict(
     type='ImageClassifierllp',
     backbone=dict(
-        type='HiViT',
+        type='VisionTransformer',
         arch='base',
         img_size=224,
-        init_cfg=dict(type='Pretrained', checkpoint='/scratch/yw6594/hpml/mmpretrain/out/out/maskout/epoch_5.pth', prefix='backbone.')),
-    neck=dict(type='GlobalAveragePooling'),
+        patch_size=16,
+        frozen_stages=12,
+        out_type='cls_token',
+        final_norm=True,
+        init_cfg=dict(type='Pretrained', checkpoint='/scratch/yw6594/hpml/mmpretrain/omit/mae_vit-base-p16_8xb512-coslr-300e-fp16_in1k_20220829-c2cf66ba.pth', prefix='backbone.')),
+    neck=dict(type='ClsBatchNormNeck', input_features=768),
     head=dict(
-        type='LinearClsHead',
+        type='VisionTransformerClsHead',
         num_classes=100,
-        in_channels=512,
-        init_cfg=None,  # suppress the default init_cfg of LinearClsHead.
-        loss=dict(
-            type='LabelSmoothLoss', label_smooth_val=0.1, mode='original'),
-        cal_acc=False),
-    init_cfg=[
-        dict(type='TruncNormal', layer='Linear', std=0.02, bias=0.),
-        dict(type='Constant', layer='LayerNorm', val=1., bias=0.)
-    ],
-    train_cfg=dict(augments=[
-        dict(type='Mixup', alpha=0.8),
-        dict(type='CutMix', alpha=1.0)
-    ]),
-)
+        in_channels=768,
+        loss=dict(type='CrossEntropyLoss'),
+        init_cfg=[dict(type='TruncNormal', layer='Linear', std=0.01)]))
 
 
 # dataset settings
@@ -112,7 +105,7 @@ test_evaluator = val_evaluator
 optim_wrapper = dict(
     optimizer=dict(
         type='AdamW',
-        lr=5e-4 * 1024 / 512,
+        lr=3e-4 * 1024 / 512,
         weight_decay=0.05,
         eps=1e-8,
         betas=(0.9, 0.999)),
@@ -129,16 +122,16 @@ optim_wrapper = dict(
 # learning policy
 param_scheduler = [
     # warm up learning rate scheduler
-    dict(
-        type='LinearLR',
-        start_factor=1/3,
-        by_epoch=False,
-        end=200,
-        # update by iter
-        # convert_to_iter_based=True
-        ),
+    # dict(
+    #     type='LinearLR',
+    #     start_factor=1/3,
+    #     by_epoch=False,
+    #     end=200,
+    #     # update by iter
+    #     # convert_to_iter_based=True
+    #     ),
     # main learning rate scheduler
-    # dict(type='CosineAnnealingLR', eta_min=1e-5, by_epoch=True, begin=0)
+    dict(type='CosineAnnealingLR', eta_min=1e-5, by_epoch=True, begin=0, convert_to_iter_based=True)
 ]
 
 # train, val, test setting
